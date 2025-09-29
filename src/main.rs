@@ -7,6 +7,7 @@ use log::LevelFilter;
 use log::set_max_level;
 
 mod args;
+mod project;
 mod terminal;
 
 #[derive(Clone, Subcommand)]
