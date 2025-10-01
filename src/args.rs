@@ -6,13 +6,14 @@
 use log;
 use serde::Serialize;
 
-use std::env;
+
 use std::fs;
 use std::io::ErrorKind;
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use crate::terminal::cli_basic;
+use crate::project::project;
 
 // Config: would not be needed elsewhere
 // only wraps around SubcommandNew
@@ -35,46 +36,7 @@ pub enum FileStat {
 }
 
 impl SubcommandNew {
-	/* Private funtions create a facade for our impl */
-
-	// A wrapper for fs::create_dir()
-	fn mkdir(dir: String) -> i8 {
-		log::info!("About to create directory '{}'", dir);
-
-		match fs::create_dir(dir) {
-			Ok(_) => {
-				log::info!("Succesfully created directory");
-				0
-			}
-			Err(e) => {
-				log::error!("Failed to create directory!");
-				log::error!("Error:	{}", e);
-				-1
-			}
-		}
-	}
-
-	// A wrapper for env::current_dir()
-	fn getcwd() -> Result<PathBuf, ()> {
-		log::info!("About to get current working directory");
-
-		match env::current_dir() {
-			Ok(path) => {
-				log::info!("Succesfully got path: {:?}", path);
-				Ok(path)
-			}
-			Err(e) => {
-				log::error!("Failed to get path: {}", e);
-				Err(())
-			}
-		}
- 	}
-
-	fn get_dir_create_filepath(dir: String) -> String {
-		let cwd = Self::getcwd();
-		let filepath =  cwd.expect("Cannot join path").join(dir);
-		filepath.to_string_lossy().to_string()
-	}
+	/* UPDATE (1-10): private methods moved to project.rs */
 
 	pub fn initialize_implementation(name: String, proj_type: String, license: String) -> SubcommandNew {
 		SubcommandNew {
@@ -85,7 +47,7 @@ impl SubcommandNew {
 	}
 
 	pub fn ensure_sanity(&self) -> Result<FileStat, std::io::Error> {
-		let binding = Self::get_dir_create_filepath(self.name.clone());
+		let binding = project::get_dir_create_filepath(self.name.clone());
   		let project_path = Path::new(&binding);
 		log::info!("Checking if {:?} exists...", project_path);
 
@@ -127,9 +89,9 @@ impl SubcommandNew {
 		let config = toml::to_string(&config_opts).unwrap();
 
 		// join both project directory and config file
-		let binding = Self::get_dir_create_filepath(self.name.clone());
+		let binding = project::get_dir_create_filepath(self.name.clone());
   		let project_path = Path::new(&binding);
-  		let conf_file_name = ".mizurc.toml";
+  		let conf_file_name = "mizurc.toml";
   		let conf_file_path = project_path.join(conf_file_name);
 
 		// now write config
@@ -155,13 +117,13 @@ impl SubcommandNew {
 			},
 			Ok(FileStat::Exists) => {
 				cli_basic::alert::creation(self.name.clone(), true);
-				assert_eq!(Self::mkdir(self.name.clone()), 0, "should not be erroneous");
+				assert_eq!(project::mkdir(self.name.clone()), 0, "should not be erroneous");
 			}
 			Err(e) => {
 				match e.kind() {
 					ErrorKind::NotFound => {
 						cli_basic::alert::creation(self.name.clone(), true);
-						assert_eq!(Self::mkdir(self.name.clone()), 0, "should not be erroneous")
+						assert_eq!(project::mkdir(self.name.clone()), 0, "should not be erroneous")
 					}
 					_ => log::trace!("{}", e),
 				}
