@@ -4,7 +4,7 @@ set -e
 
 # User options
 CC=gcc
-CC_FLAGS="-Wall -Wextra -Wpedantic -std=c11 -march=native -Icli/ -Ilog/"
+CC_FLAGS="-Wall -Wextra -Wpedantic -std=c11 -march=native -ggdb -O0 -Icli/ -Ilog/"
 PREFIX=/usr/local/bin
 CMD_PREFIX="$CC $CC_FLAGS"
 
