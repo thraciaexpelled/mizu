@@ -36,7 +36,6 @@ static void print_help_meta() {
 #define MIZU_SUBCOMMANDS
 
 static Subcommand retrieve_current_subcommand(char *subcommand) {
-	assert(subcommand != NULL);
 	for (int i = 0; i < subcommand_index; ++i) {
 		if (strcmp(subcommand, subcommands[i]) == 0) {
 			assert(i < 2);
@@ -93,7 +92,6 @@ int main(int argc, char *argv[]) {
 		subcommand_location += 1;
 
 	char *subcommand = argv[subcommand_location];
-
 	if (subcommand == NULL) {
 		fprintf(stderr, "mizu: no command entered\n\n");
 		print_help_meta();
@@ -103,10 +101,10 @@ int main(int argc, char *argv[]) {
 	// match through the subcommand that we got
 	Subcommand sb = retrieve_current_subcommand(subcommand);
 	switch (sb) {
-		case New: /* new */
+		case New:
 			fprintf(stderr, "mizu: new: not implemented yet\n");
 			break;
-		case Init: /* init */
+		case Init:
 			fprintf(stderr, "mizu: init: not implemented yet\n");
 	}
 
