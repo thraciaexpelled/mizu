@@ -9,10 +9,10 @@
 #define MIZU_SUBCOMMANDS
 
 // this is both a *char[] and enum representation of the subcommands
-const char *subcommands[] = { "new", "init" };
+extern const char *subcommands[];
 
 // index for 'subcommands'
-int subcommand_index = sizeof(subcommands) / sizeof(subcommands[0]);
+extern int subcommand_index;
 
 // enum representation of 'subcommands'
 typedef enum {

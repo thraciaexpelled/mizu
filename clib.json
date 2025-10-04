@@ -1,0 +1,7 @@
+{
+  "name": "mizu",
+  "version": "alpha-0.1",
+  "dependencies": {
+    "stephenmathieson/path-join.c": "0.0.6"
+  }
+}

@@ -9,8 +9,12 @@
 // meta
 #include <log.h>
 #include <structs.h>
+#include <subcommands/new.h>
 
 #define VERSION "alpha-0.1"
+
+const char *subcommands[] = { "new", "init" };
+int subcommand_index = sizeof(subcommands) / sizeof(subcommands[0]);
 
 static void print_help_meta() {
 	printf("Usage: mizu [COMMAND] <SUBCOMMAND>\n");
@@ -87,7 +91,7 @@ int main(int argc, char *argv[]) {
 
 	// let's handle subcommands too :)
 	
-	// (check line 30)
+	// (check line 30-31)
 	if (getopt_set)
 		subcommand_location += 1;
 
@@ -101,9 +105,13 @@ int main(int argc, char *argv[]) {
 	// match through the subcommand that we got
 	Subcommand sb = retrieve_current_subcommand(subcommand);
 	switch (sb) {
-		case New:
-			fprintf(stderr, "mizu: new: not implemented yet\n");
+		case New: {
+			// fprintf(stderr, "mizu: new: not implemented yet\n");
+			subc_new_t *subc_new = new_init(argc - 1, &argv[1]);
+			assert((subc_new_t*)-1 != subc_new);
+			assert(0 == start(subc_new));
 			break;
+		}
 		case Init:
 			fprintf(stderr, "mizu: init: not implemented yet\n");
 	}
