@@ -16,11 +16,11 @@ jansson (end-user and dev libraries)
 0.  System requirements:
     - Unix/Linux
     - Microsoft Windows (in a [POSIX environment (hyperlink to msys2.org)](https://www.msys2.org/))
-1.  **To build**
+1.  ### To build
     ```commandline
     $ make
     ```
-2.  **To install**
+2.  ### To install
     ```commandline
     $ make install
     # NOTE: you may or may not need `sudo` to install systemwide depending on your system configuration
