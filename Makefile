@@ -1,13 +1,14 @@
-CC_FLAGS=-Wall -Wextra -Wpedantic -Iinclude/ -O0 -ggdb
-OBJ=main.o carrier.o project.o config.o
+CFLAGS:=-Wall -Wextra -Wpedantic -Iinclude/ -O0 -ggdb $(shell pkg-config --cflags jansson)
+LDFLAGS:=$(shell pkg-config --libs jansson)
+OBJ:=main.o carrier.o project.o config.o
 
 .PHONY: clean install
 
 mizu: $(OBJ)
-	$(CC) $(CC_FLAGS) -o $@ $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
 %.o: src/%.c
-	$(CC) $(CC_FLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f ./mizu

@@ -5,19 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <sys/ioctl.h>
-
-static int get_terminal_width() {
-    struct winsize win;
-
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &win) == -1) {
-        fprintf(stderr, "mizu: ioctl: %s\n", strerror(errno));
-        return -1;
-    }
-
-    return (int)win.ws_col;
-}
-
 enum Colors {
     Black = 0,
     Red,
@@ -40,7 +27,7 @@ static char *paint(const char *str, const char *color) {
     size_t str_len = strlen(str);
     size_t color_len = strlen(color);
     size_t reset_len = strlen(colors[LAST_INDEX(colors)]);
-    
+
     char *buffer = malloc(str_len + color_len + reset_len + 1);
     assert(buffer != NULL);
     snprintf(buffer, str_len + color_len + reset_len + 1, "%s%s%s", color, str, colors[LAST_INDEX(colors)]);
@@ -78,6 +65,7 @@ void print_progress(const char *type, const char *info, const char *dirname) {
         free(painted_type);
         return;
     }
+
     fprintf(stdout, "\t%s\t%s (name: %s)\n", painted_type, info, dirname);
     free(painted_type);
 }
