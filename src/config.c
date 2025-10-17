@@ -19,11 +19,70 @@
 #include <config.h>
 #include <main.h>
 
+
 static const char *get_name_of_current_user();
 #ifdef __WIN32
+
+// these two functions are vibe coded because as much as i'm
+// a win32api shill, i still don't know shi about it
+static WCHAR* get_username() {
+    WCHAR username_buffer[UNLEN + 1];
+    DWORD username_len = UNLEN + 1;
+
+    if (GetUserNameW(username_buffer, &username_len)) {
+        WCHAR* username_heap = malloc(username_len * sizeof(WCHAR));
+        if (username_heap == NULL) {
+            print_warn("failed to retrieve username; falling back");
+            return L"anonymous";
+        }
+
+        lstrcpyW(username_heap, username_buffer);
+        return username_heap;
+    }
+
+    print_warn("failed to retrieve username; falling back");
+    return L"anonymous";
+}
+
+static char* convert_wchar_to_mbs(const wchar_t* wide_str) {
+    if (wide_str == NULL) {
+        return NULL;
+    }
+
+    size_t required_size = wcstombs(NULL, wide_str, 0);
+
+    if (required_size == (size_t)-1) {
+        print_warn("username probably contains invalid characters");
+        return NULL;
+    }
+
+    char* mb_str = (char*)malloc(required_size + 1);
+    if (mb_str == NULL) {
+        fprintf(stderr, "Failed to allocate memory.\n");
+        return NULL;
+    }
+
+    size_t result = wcstombs(mb_str, wide_str, required_size + 1);
+
+    if (result == (size_t)-1) {
+        free(mb_str);
+        return NULL;
+    }
+
+    return mb_str;
+}
+
 static const char *get_name_of_current_user() {
-    // TODO: implement function
-    return "anonymous";
+    char *u1, *u2;
+    u1 = convert_wchar_to_mbs(get_username());
+    if (u1 == NULL) {
+        print_warn("failed to get name of correct user and user has not provided username. falling back");
+        return "anonymous";
+    }
+    u2 = strdup(u1);
+
+    free(u1);
+    return u2;
 }
 #else
 static const char *get_name_of_current_user() {
@@ -92,8 +151,18 @@ int config_write(config_t *config, opt_t *opt) {
         return -1;
     }
 
+    // newline is required for jansson to function properly
+    if (fputs("\n", config->config_file) == -1) {
+        print_error("cannot write config", strerror(errno));
+        free(json_out);
+        json_decref(json_obj);
+        free(config);
+        return -1;
+    }
+
     free(json_out);
     json_decref(json_obj);
+    fclose(config->config_file);
     free(config);
     return 0;
 }

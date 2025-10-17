@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <libgen.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +10,7 @@
 
 // meta
 #include <main.h>
+#include <carrier.h>
 #include <project.h>
 
 char *project_version;
@@ -23,8 +25,8 @@ static void print_help(char *argv[]) {
     printf("Other options:\n");
     printf("    -h  shows this message\n");
     printf("    -v  set version to be used for any given option\n");
-    printf("    -V  prints version and exits");
-    printf("Flags: (nil as of `%s')\n\n", MIZU_VERSION_META);
+    printf("    -V  prints version and exits\n\n");
+    printf("Flags: (nil as of '%s')\n\n", MIZU_VERSION_META);
     printf("mizu is free and open source software under the terms and conditions of the MIT license\n");
     printf("Copyright (c) 2025-present thraciaexpelled/clangjesus, All rights reserved\n");
 }
@@ -53,7 +55,6 @@ int main(int argc, char *argv[]) {
                     free(opt);
                     exit(EXIT_FAILURE);
                 }
-
                 opt->name = strdup(basename(cwd));
                 break;
             case 'N':
@@ -93,17 +94,17 @@ int main(int argc, char *argv[]) {
     switch (opt->job) {
         case New: {
             int c1 = project_new(opt);
-            printf("\n");
+            // printf("\n");
             return c1;
         }
         case Init: {
             int c2 = project_init(opt);
-            printf("\n");
+            // printf("\n");
             return c2;
         }
         case Remove: {
             int c3 = project_remove(opt);
-            printf("\n");
+            // printf("\n");
             return c3;
         }
     }
