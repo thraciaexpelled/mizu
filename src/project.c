@@ -98,6 +98,16 @@ static enum ProjectStanding project_is_valid(const char *filepath) {
     return InvalidJSON;
 }
 
+static json_t read_json_file(const char *json_filepath) {
+    const char *json_file_contents = read_file(json_filepath);
+
+    json_t *error;
+    json_t *json_root = json_loads(json_file_contents, 0, &error);
+
+    if (json_root != NULL) {
+        return ;
+    }
+}
 
 // Ok: Exists
 // Bad: Doesn't exist
@@ -129,7 +139,7 @@ static bool project_name_is_valid(const char *project_name) {
 
 int project_new(opt_t *opt) {
     if (!project_name_is_valid(opt->name)) {
-        print_error("invalid project name", optarg);
+        print_error("invalid project name", opt->name);
         return -1;
     }
 
@@ -174,7 +184,6 @@ int project_new(opt_t *opt) {
     if (final_result == 0) {
         assert(config_write(config, opt) == 0);
         print_progress(" ok ", "created new project", opt->name);
-        fclose(config->config_file);
         return final_result;
     } else {
         print_error("failed to create new project", strerror(final_result));
@@ -248,4 +257,32 @@ int project_remove(opt_t *opt) {
     print_progress(" ok ", "removed project", mizu_project_file);
 
     return 0; // Success
+}
+
+int project_info(opt_t *opt) {
+    if (!project_name_is_valid(opt->name)) {
+        print_error("project does not exist", opt->name);
+        return -1;
+    }
+
+    // pathname
+    char pathbuf[PATH_MAX];
+    snprintf(pathbuf, PATH_MAX, "./%s", opt->name);
+
+    // concatename pathbuf + ./mizu.project.json
+    char mizu_project_file[strlen(pathbuf) + strlen("mizu.project.json") + 2];
+    snprintf(mizu_project_file, sizeof(mizu_project_file), "%s/%s", pathbuf, "mizu.project.json");
+
+    switch (project_exists(mizu_project_file)) {
+        case Ok:
+            print_error("project already exists in", mizu_project_file);
+            return -1;
+        case Bad:
+            break;
+        case BadSyntax:
+            print_warn("fix your project file");
+            return -1;
+    }
+
+    
 }

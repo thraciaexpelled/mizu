@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     }
 
     int c;
-    while ((c = getopt(argc, argv, "IN:R:hv:V")) != -1){
+    while ((c = getopt(argc, argv, "IF:N:R:hv:V")) != -1){
         switch (c) {
             case 'I':
                 opt->job = Init;
@@ -57,6 +57,12 @@ int main(int argc, char *argv[]) {
                 }
                 opt->name = strdup(basename(cwd));
                 break;
+            case 'F':
+                printf("\n");
+                print_error("todo", "not implemented yet");
+                free(opt->name);
+                free(opt);
+                return -1;
             case 'N':
                 opt->job = New;
                 opt->name = strdup(optarg);
@@ -94,17 +100,17 @@ int main(int argc, char *argv[]) {
     switch (opt->job) {
         case New: {
             int c1 = project_new(opt);
-            // printf("\n");
+            printf("\n");
             return c1;
         }
         case Init: {
             int c2 = project_init(opt);
-            // printf("\n");
+            printf("\n");
             return c2;
         }
         case Remove: {
             int c3 = project_remove(opt);
-            // printf("\n");
+            printf("\n");
             return c3;
         }
     }

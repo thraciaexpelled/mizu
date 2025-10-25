@@ -7,6 +7,9 @@ OBJ:=main.o carrier.o project.o config.o
 mizu: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $(OBJ) $(LDFLAGS)
 
+log.o: src/log.c
+	$(CC) $(CFLAGS) -DLOG_USE_COLOR -c -o $@ $<
+
 %.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
